@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart - Modern Online Supermarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fresh: {
+                            500: '#4CAF50',
+                            600: '#3D8B40',
+                            700: '#2E7D32'
+                        },
+                        organic: {
+                            400: '#8BC34A',
+                            500: '#7CB342',
+                            600: '#689F38'
+                        },
+                        discount: {
+                            400: '#FF9800',
+                            500: '#FB8C00',
+                            600: '#F57C00'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    <!-- 3D Floating Food Items Background -->
+    <div id="threejs-bg" class="fixed inset-0 -z-10 opacity-10"></div>
+    
+    <!-- Top Announcement Bar -->
+    <div class="bg-fresh-600 text-white text-center py-2 px-4">
+        <p class="text-sm font-medium">🚚 Free delivery on orders over $50 | ⏰ Open 24/7 online</p>
+    </div>
+    
+    <!-- Main Navigation -->
+    <nav class="sticky top-0 w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <div class="text-3xl font-bold bg-gradient-to-r from-fresh-500 to-organic-400 bg-clip-text text-transparent">
+                    FreshMart
+                </div>
+                <div class="ml-10 hidden lg:flex space-x-6">
+                    <a href="#" class="font-medium hover:text-fresh-600 transition-colors">Shop</a>
+                    <a href="#" class="font-medium hover:text-fresh-600 transition-colors">Categories</a>
+                    <a href="#" class="font-medium hover:text-fresh-600 transition-colors">Deals</a>
+                    <a href="#" class="font-medium hover:text-fresh-600 transition-colors">Recipes</a>
+                    <a href="#" class="font-medium hover:text-fresh-600 transition-colors">Locations</a>
+                </div>
+            </div>
+            
+            <!-- Search and Icons -->
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden md:block">
+                    <input type="text" placeholder="Search for products..." class="w-64 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-fresh-500 focus:border-transparent">
+                    <button class="absolute right-3 top-2 text-gray-500 hover:text-fresh-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <button class="p-2 text-gray-700 hover:text-fresh-600 relative">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span class="absolute -top-1 -right-1 bg-fresh-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                </button>
+                <button class="p-2 text-gray-700 hover:text-fresh-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </button>
+                <button class="lg:hidden p-2 text-gray-700 hover:text-fresh-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Search -->
+        <div class="container mx-auto px-4 pb-3 md:hidden">
+            <div class="relative">
+                <input type="text" placeholder="Search for products..." class="w-full px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-fresh-500 focus:border-transparent">
+                <button class="absolute right-3 top-2 text-gray-500 hover:text-fresh-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section with Weekly Specials -->
+    <section class="relative">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Hero Carousel -->
+            <div class="bg-gradient-to-r from-organic-400 to-fresh-500 rounded-2xl overflow-hidden shadow-xl">
+                <div class="flex flex-col md:flex-row">
+                    <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                        <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">Weekly Fresh Deals</h1>
+                        <p class="text-white text-lg mb-6">Organic fruits & vegetables up to 30% off this week only!</p>
+                        <button class="self-start px-6 py-3 bg-white text-fresh-600 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-lg">
+                            Shop Now
+                        </button>
+                    </div>
+                    <div class="md:w-1/2 h-64 md:h-auto">
+                        <div id="p5-fruits" class="w-full h-full"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Categories -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <a href="#" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center">
+                    <div class="w-16 h-16 mb-2 rounded-full bg-fresh-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-fresh-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-medium text-center">All Products</span>
+                </a>
+                <a href="#" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center">
+                    <div class="w-16 h-16 mb-2 rounded-full bg-organic-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-organic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-medium text-center">Fresh Produce</span>
+                </a>
+                <a href="#" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center">
+                    <div class="w-16 h-16 mb-2 rounded-full bg-yellow-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-medium text-center">Weekly Deals</span>
+                </a>
+                <a href="#" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center">
+                    <div class="w-16 h-16 mb-2 rounded-full bg-blue-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                    </div>
+                    <span class="font-medium text-center">Recipes</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Products -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold">Fresh Picks of the Week</h2>
+                <a href="#" class="text-fresh-600 font-medium hover:underline">View All</a>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <!-- Product 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <div class="h-40 bg-green-100 flex items-center justify-center">
+                            <div id="product-1" class="w-full h-full"></div>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-discount-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            -20%
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold mb-1">Organic Apples</h3>
+                        <p class="text-gray-600 text-sm mb-2">1kg bag</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-fresh-600">$3.99</span>
+                                <span class="text-gray-400 text-sm line-through ml-2">$4.99</span>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <div class="h-40 bg-yellow-100 flex items-center justify-center">
+                            <div id="product-2" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold mb-1">Bananas</h3>
+                        <p class="text-gray-600 text-sm mb-2">Bunch of 6</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-fresh-600">$1.49</span>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <div class="h-40 bg-red-100 flex items-center justify-center">
+                            <div id="product-3" class="w-full h-full"></div>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-discount-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            -15%
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold mb-1">Cherry Tomatoes</h3>
+                        <p class="text-gray-600 text-sm mb-2">250g punnet</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-fresh-600">$2.99</span>
+                                <span class="text-gray-400 text-sm line-through ml-2">$3.49</span>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <div class="h-40 bg-orange-100 flex items-center justify-center">
+                            <div id="product-4" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold mb-1">Carrots</h3>
+                        <p class="text-gray-600 text-sm mb-2">1kg bag</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-fresh-600">$1.29</span>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 5 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <div class="h-40 bg-purple-100 flex items-center justify-center">
+                            <div id="product-5" class="w-full h-full"></div>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-discount-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            -25%
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold mb-1">Eggplant</h3>
+                        <p class="text-gray-600 text-sm mb-2">Each</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-fresh-600">$1.49</span>
+                                <span class="text-gray-400 text-sm line-through ml-2">$1.99</span>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Weekly Deals -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold">Hot Deals</h2>
+                <a href="#" class="text-fresh-600 font-medium hover:underline">View All</a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Deal 1 -->
+                <div class="bg-gradient-to-r from-discount-400 to-discount-600 rounded-xl shadow-xl overflow-hidden">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/2 p-6 flex flex-col justify-center">
+                            <div class="text-white font-bold text-xl mb-2">Meat & Poultry</div>
+                            <div class="text-white text-3xl font-bold mb-4">Up to 30% Off</div>
+                            <button class="self-start px-4 py-2 bg-white text-discount-600 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors">
+                                Shop Now
+                            </button>
+                        </div>
+                        <div class="md:w-1/2 h-48">
+                            <div id="deal-1" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deal 2 -->
+                <div class="bg-gradient-to-r from-fresh-500 to-fresh-700 rounded-xl shadow-xl overflow-hidden">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/2 p-6 flex flex-col justify-center">
+                            <div class="text-white font-bold text-xl mb-2">Dairy & Eggs</div>
+                            <div class="text-white text-3xl font-bold mb-4">Buy 1 Get 1 Free</div>
+                            <button class="self-start px-4 py-2 bg-white text-fresh-600 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors">
+                                Shop Now
+                            </button>
+                        </div>
+                        <div class="md:w-1/2 h-48">
+                            <div id="deal-2" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deal 3 -->
+                <div class="bg-gradient-to-r from-organic-400 to-organic-600 rounded-xl shadow-xl overflow-hidden">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/2 p-6 flex flex-col justify-center">
+                            <div class="text-white font-bold text-xl mb-2">Organic Produce</div>
+                            <div class="text-white text-3xl font-bold mb-4">15% Off</div>
+                            <button class="self-start px-4 py-2 bg-white text-organic-600 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors">
+                                Shop Now
+                            </button>
+                        </div>
+                        <div class="md:w-1/2 h-48">
+                            <div id="deal-3" class="w-full h-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Recipe Inspiration -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold">Recipe Inspiration</h2>
+                <a href="#" class="text-fresh-600 font-medium hover:underline">View All</a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Recipe 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="h-48 bg-blue-100 relative">
+                        <div id="recipe-1" class="w-full h-full"></div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                            <h3 class="text-white font-bold text-xl">Summer Salad Bowl</h3>
+                            <div class="flex items-center text-white text-sm">
+                                <span>15 min</span>
+                                <span class="mx-2">•</span>
+                                <span>4 ingredients</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-green-300"></div>
+                                <div class="w-8 h-8 rounded-full bg-yellow-300"></div>
+                                <div class="w-8 h-8 rounded-full bg-red-300"></div>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700 font-medium">View Recipe</button>
+                        </div>
+                        <button class="w-full py-2 bg-fresh-100 text-fresh-600 rounded-lg font-medium hover:bg-fresh-200 transition-colors">
+                            Add Ingredients to Cart
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recipe 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="h-48 bg-yellow-100 relative">
+                        <div id="recipe-2" class="w-full h-full"></div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                            <h3 class="text-white font-bold text-xl">Veggie Pasta</h3>
+                            <div class="flex items-center text-white text-sm">
+                                <span>25 min</span>
+                                <span class="mx-2">•</span>
+                                <span>7 ingredients</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-green-300"></div>
+                                <div class="w-8 h-8 rounded-full bg-purple-300"></div>
+                                <div class="w-8 h-8 rounded-full bg-orange-300"></div>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700 font-medium">View Recipe</button>
+                        </div>
+                        <button class="w-full py-2 bg-fresh-100 text-fresh-600 rounded-lg font-medium hover:bg-fresh-200 transition-colors">
+                            Add Ingredients to Cart
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recipe 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="h-48 bg-green-100 relative">
+                        <div id="recipe-3" class="w-full h-full"></div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                            <h3 class="text-white font-bold text-xl">Smoothie Bowl</h3>
+                            <div class="flex items-center text-white text-sm">
+                                <span>10 min</span>
+                                <span class="mx-2">•</span>
+                                <span>5 ingredients</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-pink-300"></div>
+                                <div class="w-8 h-8 rounded-full bg-yellow-300"></div>
+                                <div class="w-8 h-8 rounded-full bg-blue-300"></div>
+                            </div>
+                            <button class="text-fresh-600 hover:text-fresh-700 font-medium">View Recipe</button>
+                        </div>
+                        <button class="w-full py-2 bg-fresh-100 text-fresh-600 rounded-lg font-medium hover:bg-fresh-200 transition-colors">
+                            Add Ingredients to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Delivery Options -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-12">How Would You Like Your Order?</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Option 1 -->
+                <div class="bg-gray-50 rounded-xl p-8 text-center hover:shadow-md transition-shadow">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-fresh-100 flex items-center justify-center">
+                        <svg class="w-10 h-10 text-fresh-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Pick Up In-Store</h3>
+                    <p class="text-gray-600 mb-4">Order online and pick up at your convenience. Ready in as little as 2 hours.</p>
+                    <button class="px-6 py-2 bg-fresh-600 text-white rounded-full font-medium hover:bg-fresh-700 transition-colors">
+                        Select
+                    </button>
+                </div>
+                
+                <!-- Option 2 -->
+                <div class="bg-gray-50 rounded-xl p-8 text-center hover:shadow-md transition-shadow border-2 border-fresh-500 relative">
+                    <div class="absolute -top-3 -right-3 bg-fresh-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        POPULAR
+                    </div>
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-fresh-100 flex items-center justify-center">
+                        <svg class="w-10 h-10 text-fresh-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Delivery Slot</h3>
+                    <p class="text-gray-600 mb-4">Choose a 1-hour delivery window that works for you. Same-day available.</p>
+                    <button class="px-6 py-2 bg-fresh-600 text-white rounded-full font-medium hover:bg-fresh-700 transition-colors">
+                        Select
+                    </button>
+                </div>
+                
+                <!-- Option 3 -->
+                <div class="bg-gray-50 rounded-xl p-8 text-center hover:shadow-md transition-shadow">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-fresh-100 flex items-center justify-center">
+                        <svg class="w-10 h-10 text-fresh-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Instant Delivery</h3>
+                    <p class="text-gray-600 mb-4">Get your groceries in under 60 minutes with our express delivery service.</p>
+                    <button class="px-6 py-2 bg-fresh-600 text-white rounded-full font-medium hover:bg-fresh-700 transition-colors">
+                        Select
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Shop</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">All Products</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Fresh Produce</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Meat & Poultry</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Dairy & Eggs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Bakery</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Services</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Delivery Options</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Store Pickup</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Gift Cards</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Recipe Ideas</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Weekly Ads</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">About</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Our Story</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Sustainability</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Press</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Locations</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Help</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="text-2xl font-bold bg-gradient-to-r from-fresh-500 to-organic-400 bg-clip-text text-transparent mb-4 md:mb-0">
+                        FreshMart
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center text-gray-500 text-sm">
+                    <p>© 2023 FreshMart. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Three.js Background - Floating Food Items
+        const threeJsBg = document.getElementById('threejs-bg');
+        
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        threeJsBg.appendChild(renderer.domElement);
+        
+        // Create food items
+        const foods = [];
+        const foodGeometries = [
+            new THREE.SphereGeometry(0.2, 32, 32), // Apple
+            new THREE.ConeGeometry(0.2, 0.4, 32), // Carrot
+            new THREE.BoxGeometry(0.3, 0.2, 0.3), // Milk carton
+            new THREE.TorusGeometry(0.15, 0.05, 16, 32) // Donut
+        ];
+        
+        const foodColors = [
+            0xff5252, // Red
+            0x4CAF50, // Green
+            0x2196F3, // Blue
+            0xFF9800  // Orange
+        ];
+        
+        // Create food items
+        for(let i = 0; i < 20; i++) {
+            const geometry = foodGeometries[Math.floor(Math.random() * foodGeometries.length)];
+            const material = new THREE.MeshBasicMaterial({
+                color: foodColors[Math.floor(Math.random() * foodColors.length)],
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            const food = new THREE.Mesh(geometry, material);
+            
+            // Random position
+            food.position.x = (Math.random() - 0.5) * 10;
+            food.position.y = (Math.random() - 0.5) * 10;
+            food.position.z = (Math.random() - 0.5) * 10;
+            
+            // Random rotation
+            food.rotation.x = Math.random() * Math.PI;
+            food.rotation.y = Math.random() * Math.PI;
+            
+            // Random scale
+            const scale = 0.5 + Math.random() * 0.5;
+            food.scale.set(scale, scale, scale);
+            
+            // Store velocity
+            food.userData = {
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01
+                ),
+                rotationSpeed: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01
+                )
+            };
+            
+            scene.add(food);
+            foods.push(food);
+        }
+        
+        camera.position.z = 5;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update food positions and rotations
+            foods.forEach(food => {
+                food.position.add(food.userData.velocity);
+                food.rotation.x += food.userData.rotationSpeed.x;
+                food.rotation.y += food.userData.rotationSpeed.y;
+                food.rotation.z += food.userData.rotationSpeed.z;
+                
+                // Bounce off boundaries
+                if(food.position.x > 5 || food.position.x < -5) food.userData.velocity.x *= -1;
+                if(food.position.y > 5 || food.position.y < -5) food.userData.velocity.y *= -1;
+                if(food.position.z > 5 || food.position.z < -5) food.userData.velocity.z *= -1;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // p5.js Hero Fruits Animation
+        const p5Fruits = new p5((p) => {
+            let fruits = [];
+            
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#p5-fruits').width, p.select('#p5-fruits').height);
+                canvas.parent('p5-fruits');
+                
+                // Create fruits
+                for(let i = 0; i < 15; i++) {
+                    fruits.push({
+                        x: p.random(p.width),
+                        y: p.random(p.height),
+                        size: p.random(30, 80),
+                        type: p.floor(p.random(4)), // 0=apple, 1=banana, 2=orange, 3=grape
+                        speed: p.random(0.5, 2),
+                        angle: p.random(p.TWO_PI)
+                    });
+                }
+            };
+            
+            p.draw = () => {
+                p.clear();
+                
+                // Draw fruits
+                for(let i = 0; i < fruits.length; i++) {
+                    let fruit = fruits[i];
+                    
+                    // Update position
+                    fruit.x += p.cos(fruit.angle) * fruit.speed;
+                    fruit.y += p.sin(fruit.angle) * fruit.speed;
+                    
+                    // Bounce off edges
+                    if(fruit.x < 0 || fruit.x > p.width) fruit.angle = p.PI - fruit.angle;
+                    if(fruit.y < 0 || fruit.y > p.height) fruit.angle = -fruit.angle;
+                    
+                    // Draw fruit based on type
+                    p.noStroke();
+                    switch(fruit.type) {
+                        case 0: // Apple
+                            p.fill(234, 67, 53);
+                            p.ellipse(fruit.x, fruit.y, fruit.size);
+                            p.fill(50, 168, 82);
+                            p.rect(fruit.x - 5, fruit.y - fruit.size/2 - 5, 10, 10);
+                            break;
+                        case 1: // Banana
+                            p.fill(255, 234, 0);
+                            p.arc(fruit.x, fruit.y, fruit.size, fruit.size, 0.2, p.PI - 0.2);
+                            break;
+                        case 2: // Orange
+                            p.fill(255, 152, 0);
+                            p.ellipse(fruit.x, fruit.y, fruit.size);
+                            break;
+                        case 3: // Grape
+                            p.fill(103, 58, 183);
+                            for(let j = 0; j < 3; j++) {
+                                p.ellipse(fruit.x + j * 15 - 15, fruit.y - j * 10, fruit.size/2);
+                            }
+                            break;
+                    }
+                }
+            };
+            
+            p.windowResized = () => {
+                p.resizeCanvas(p.select('#p5-fruits').width, p.select('#p5-fruits').height);
+            };
+        });
+        
+        // Product Visualizations
+        const product1 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#product-1').width, p.select('#product-1').height);
+                canvas.parent('product-1');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.fill(234, 67, 53);
+                p.noStroke();
+                
+                // Draw apple
+                p.ellipse(p.width/2, p.height/2, p.width * 0.6);
+                
+                // Stem
+                p.fill(139, 195, 74);
+                p.rect(p.width/2 - 5, p.height/2 - p.height * 0.3, 10, 20);
+                
+                // Highlight
+                p.fill(255, 255, 255, 50);
+                p.ellipse(p.width/2 + p.width * 0.15, p.height/2 - p.height * 0.15, p.width * 0.2);
+            };
+        });
+        
+        const product2 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#product-2').width, p.select('#product-2').height);
+                canvas.parent('product-2');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.fill(255, 234, 0);
+                p.noStroke();
+                
+                // Draw banana
+                p.beginShape();
+                p.vertex(p.width * 0.3, p.height * 0.7);
+                p.bezierVertex(p.width * 0.5, p.height * 0.9, p.width * 0.7, p.height * 0.9, p.width * 0.7, p.height * 0.5);
+                p.bezierVertex(p.width * 0.7, p.height * 0.2, p.width * 0.5, p.height * 0.1, p.width * 0.3, p.height * 0.3);
+                p.endShape(p.CLOSE);
+            };
+        });
+        
+        const product3 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#product-3').width, p.select('#product-3').height);
+                canvas.parent('product-3');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                
+                // Draw cherry tomatoes
+                p.noStroke();
+                p.fill(234, 67, 53);
+                for(let i = 0; i < 3; i++) {
+                    for(let j = 0; j < 2; j++) {
+                        p.ellipse(p.width * 0.3 + i * p.width * 0.2, p.height * 0.3 + j * p.height * 0.4, p.width * 0.2);
+                    }
+                }
+                
+                // Vine
+                p.stroke(50, 168, 82);
+                p.strokeWeight(3);
+                p.noFill();
+                p.beginShape();
+                p.vertex(p.width * 0.2, p.height * 0.2);
+                p.bezierVertex(p.width * 0.4, p.height * 0.1, p.width * 0.6, p.height * 0.3, p.width * 0.8, p.height * 0.2);
+                p.endShape();
+            };
+        });
+        
+        const product4 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#product-4').width, p.select('#product-4').height);
+                canvas.parent('product-4');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.fill(255, 152, 0);
+                p.noStroke();
+                
+                // Draw carrot
+                p.ellipse(p.width/2, p.height/2, p.width * 0.4, p.height * 0.8);
+                
+                // Top
+                p.fill(139, 195, 74);
+                p.triangle(
+                    p.width/2, p.height * 0.1,
+                    p.width * 0.3, p.height * 0.3,
+                    p.width * 0.7, p.height * 0.3
+                );
+            };
+        });
+        
+        const product5 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#product-5').width, p.select('#product-5').height);
+                canvas.parent('product-5');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.fill(103, 58, 183);
+                p.noStroke();
+                
+                // Draw eggplant
+                p.beginShape();
+                p.vertex(p.width * 0.3, p.height * 0.2);
+                p.bezierVertex(p.width * 0.2, p.height * 0.5, p.width * 0.2, p.height * 0.7, p.width * 0.4, p.height * 0.8);
+                p.bezierVertex(p.width * 0.6, p.height * 0.9, p.width * 0.8, p.height * 0.7, p.width * 0.7, p.height * 0.5);
+                p.bezierVertex(p.width * 0.6, p.height * 0.3, p.width * 0.4, p.height * 0.2, p.width * 0.3, p.height * 0.2);
+                p.endShape();
+                
+                // Stem
+                p.fill(139, 195, 74);
+                p.rect(p.width * 0.45, p.height * 0.15, 10, 20);
+            };
+        });
+        
+        // Deal Visualizations
+        const deal1 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#deal-1').width, p.select('#deal-1').height);
+                canvas.parent('deal-1');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.noStroke();
+                
+                // Draw meat
+                p.fill(188, 71, 73);
+                p.rect(p.width * 0.2, p.height * 0.3, p.width * 0.6, p.height * 0.4, 10);
+                
+                // Fat
+                p.fill(255, 255, 255, 200);
+                p.rect(p.width * 0.3, p.height * 0.4, p.width * 0.4, p.height * 0.1);
+                
+                // Bone
+                p.fill(240, 240, 240);
+                p.ellipse(p.width * 0.5, p.height * 0.6, p.width * 0.3, p.height * 0.2);
+            };
+        });
+        
+        const deal2 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#deal-2').width, p.select('#deal-2').height);
+                canvas.parent('deal-2');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.noStroke();
+                
+                // Milk carton
+                p.fill(255, 255, 255);
+                p.beginShape();
+                p.vertex(p.width * 0.3, p.height * 0.2);
+                p.vertex(p.width * 0.7, p.height * 0.2);
+                p.vertex(p.width * 0.8, p.height * 0.8);
+                p.vertex(p.width * 0.2, p.height * 0.8);
+                p.endShape(p.CLOSE);
+                
+                // Top
+                p.fill(200, 200, 200);
+                p.triangle(
+                    p.width * 0.3, p.height * 0.2,
+                    p.width * 0.7, p.height * 0.2,
+                    p.width * 0.5, p.height * 0.1
+                );
+                
+                // Eggs
+                p.fill(255, 255, 255);
+                p.ellipse(p.width * 0.4, p.height * 0.5, p.width * 0.15, p.height * 0.2);
+                p.ellipse(p.width * 0.6, p.height * 0.5, p.width * 0.15, p.height * 0.2);
+            };
+        });
+        
+        const deal3 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#deal-3').width, p.select('#deal-3').height);
+                canvas.parent('deal-3');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.noStroke();
+                
+                // Draw organic leaf
+                p.fill(139, 195, 74);
+                p.beginShape();
+                p.vertex(p.width * 0.5, p.height * 0.2);
+                p.bezierVertex(p.width * 0.7, p.height * 0.1, p.width * 0.9, p.height * 0.3, p.width * 0.8, p.height * 0.5);
+                p.bezierVertex(p.width * 0.7, p.height * 0.7, p.width * 0.5, p.height * 0.8, p.width * 0.3, p.height * 0.7);
+                p.bezierVertex(p.width * 0.1, p.height * 0.6, p.width * 0.1, p.height * 0.4, p.width * 0.3, p.height * 0.3);
+                p.bezierVertex(p.width * 0.5, p.height * 0.2, p.width * 0.5, p.height * 0.2, p.width * 0.5, p.height * 0.2);
+                p.endShape();
+                
+                // Veins
+                p.stroke(110, 165, 64);
+                p.strokeWeight(2);
+                p.line(p.width * 0.5, p.height * 0.2, p.width * 0.5, p.height * 0.5);
+                p.line(p.width * 0.5, p.height * 0.3, p.width * 0.65, p.height * 0.25);
+                p.line(p.width * 0.5, p.height * 0.3, p.width * 0.35, p.height * 0.25);
+                p.line(p.width * 0.5, p.height * 0.4, p.width * 0.7, p.height * 0.35);
+                p.line(p.width * 0.5, p.height * 0.4, p.width * 0.3, p.height * 0.35);
+            };
+        });
+        
+        // Recipe Visualizations
+        const recipe1 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#recipe-1').width, p.select('#recipe-1').height);
+                canvas.parent('recipe-1');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.noStroke();
+                
+                // Bowl
+                p.fill(240, 240, 240);
+                p.ellipse(p.width/2, p.height * 0.7, p.width * 0.8, p.height * 0.5);
+                p.ellipse(p.width/2, p.height * 0.6, p.width * 0.7, p.height * 0.3);
+                
+                // Salad
+                p.fill(76, 175, 80);
+                p.rect(p.width * 0.3, p.height * 0.5, p.width * 0.4, p.height * 0.1);
+                
+                p.fill(255, 193, 7);
+                p.ellipse(p.width * 0.4, p.height * 0.55, p.width * 0.15);
+                
+                p.fill(233, 30, 99);
+                p.ellipse(p.width * 0.6, p.height * 0.55, p.width * 0.1);
+                
+                p.fill(255, 255, 255);
+                p.rect(p.width * 0.5, p.height * 0.52, p.width * 0.2, p.height * 0.05);
+            };
+        });
+        
+        const recipe2 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#recipe-2').width, p.select('#recipe-2').height);
+                canvas.parent('recipe-2');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.noStroke();
+                
+                // Plate
+                p.fill(240, 240, 240);
+                p.ellipse(p.width/2, p.height * 0.6, p.width * 0.8);
+                
+                // Pasta
+                p.fill(255, 224, 130);
+                for(let i = 0; i < 5; i++) {
+                    p.ellipse(p.width * 0.3 + i * p.width * 0.1, p.height * 0.6, p.width * 0.05, p.width * 0.15);
+                }
+                
+                // Vegetables
+                p.fill(76, 175, 80);
+                p.ellipse(p.width * 0.4, p.height * 0.5, p.width * 0.1);
+                
+                p.fill(244, 67, 54);
+                p.ellipse(p.width * 0.6, p.height * 0.55, p.width * 0.15);
+                
+                p.fill(255, 152, 0);
+                p.ellipse(p.width * 0.5, p.height * 0.65, p.width * 0.12);
+            };
+        });
+        
+        const recipe3 = new p5((p) => {
+            p.setup = () => {
+                let canvas = p.createCanvas(p.select('#recipe-3').width, p.select('#recipe-3').height);
+                canvas.parent('recipe-3');
+            };
+            
+            p.draw = () => {
+                p.clear();
+                p.noStroke();
+                
+                // Bowl
+                p.fill(240, 240, 240);
+                p.ellipse(p.width/2, p.height * 0.7, p.width * 0.8, p.height * 0.5);
+                p.ellipse(p.width/2, p.height * 0.6, p.width * 0.7, p.height * 0.3);
+                
+                // Smoothie
+                p.fill(236, 64, 122);
+                p.ellipse(p.width/2, p.height * 0.6, p.width * 0.6, p.height * 0.25);
+                
+                // Toppings
+                p.fill(255, 193, 7);
+                p.ellipse(p.width * 0.4, p.height * 0.55, p.width * 0.1);
+                
+                p.fill(139, 195, 74);
+                p.ellipse(p.width * 0.6, p.height * 0.5, p.width * 0.08);
+                
+                p.fill(66, 165, 245);
+                p.ellipse(p.width * 0.5, p.height * 0.65, p.width * 0.07);
+            };
+        });
+        
+        // GSAP Animations for scroll-triggered elements
+        gsap.utils.toEach(".bg-gradient-to-r", (element) => {
+            gsap.from(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                backgroundPositionX: "100%",
+                duration: 1.5,
+                ease: "power3.out"
+            });
+        });
+        
+        // Animate product cards on scroll
+        gsap.utils.toEach(".hover\\:shadow-lg", (element) => {
+            gsap.from(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "back.out"
+            });
+        });
+    </script>
+</body>
+</html>
