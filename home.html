@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart - Modern Online Supermarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/assets/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation (shared across all pages) -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-fresh-600">FreshMart</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="font-medium text-gray-800 hover:text-fresh-600">Home</a>
+                <a href="products.html" class="font-medium text-gray-800 hover:text-fresh-600">Products</a>
+                <a href="deals.html" class="font-medium text-gray-800 hover:text-fresh-600">Deals</a>
+                <a href="recipes.html" class="font-medium text-gray-800 hover:text-fresh-600">Recipes</a>
+                <a href="contact.html" class="font-medium text-gray-800 hover:text-fresh-600">Contact</a>
+            </div>
+            <button class="md:hidden">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-fresh-500 to-organic-400 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">Fresh Groceries Delivered</h1>
+            <p class="text-xl mb-8">Order from our wide selection of fresh produce, pantry staples, and household essentials</p>
+            <a href="products.html" class="bg-white text-fresh-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">Shop by Category</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Category cards with links to product page -->
+                <a href="products.html?category=fresh" class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-fresh-100 rounded-full flex items-center justify-center">
+                        🍎
+                    </div>
+                    <h3 class="font-bold">Fresh Produce</h3>
+                </a>
+                <!-- Repeat for other categories -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Weekly Specials -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8">Weekly Specials</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Product cards with links -->
+                <a href="products.html?id=123" class="bg-white rounded-lg shadow-sm hover:shadow-md transition p-4">
+                    <div class="h-40 bg-green-100 mb-4"></div>
+                    <h3 class="font-bold">Organic Apples</h3>
+                    <p class="text-fresh-600 font-bold">$3.99</p>
+                </a>
+                <!-- More products -->
+            </div>
+            <div class="text-center mt-8">
+                <a href="deals.html" class="text-fresh-600 font-bold hover:underline">View All Deals →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Spotlight -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8">Recipe Inspiration</h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 h-64 bg-gray-200">
+                        <!-- p5.js recipe visualization -->
+                        <div id="recipe-spotlight"></div>
+                    </div>
+                    <div class="md:w-1/2 p-8">
+                        <h3 class="text-2xl font-bold mb-4">Summer Salad Bowl</h3>
+                        <p class="mb-6">A refreshing mix of seasonal fruits and vegetables</p>
+                        <a href="recipes.html" class="text-fresh-600 font-bold hover:underline">View Recipe →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (shared across all pages) -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold mb-4">Shop</h4>
+                    <!-- Links -->
+                </div>
+                <!-- More columns -->
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p>© 2023 FreshMart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/threejs.js"></script>
+    <script src="/assets/js/p5js.js"></script>
+</body>
+</html>
